@@ -1,0 +1,279 @@
+{
+  "consumer": {
+    "name": "baWeb"
+  },
+  "provider": {
+    "name": "baApi"
+  },
+  "interactions": [
+    {
+      "description": "a request for login a user",
+      "providerState": "there is a not logged in user with username=test@mail.com and password=password",
+      "request": {
+        "method": "POST",
+        "path": "/api/auth/login",
+        "headers": {
+          "Content-Type": "application/json; charset=UTF-8"
+        },
+        "body": {
+          "username": "test@mail.com",
+          "password": "password"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json; charset=UTF-8"
+        },
+        "body": {
+          "userDto": {
+            "firstName": "First Name",
+            "lastName": "Last Name",
+            "email": "test@mail.com",
+            "userId": "6152e88f3560e501082c1727"
+          }
+        },
+        "matchingRules": {
+          "$.body": {
+            "match": "type"
+          }
+        }
+      }
+    },
+    {
+      "description": "a request for verify the user with test@mail.com",
+      "providerState": "has not verified user with username=test@mail.com",
+      "request": {
+        "method": "GET",
+        "path": "/api/auth/verify-email",
+        "query": "token=token_123%21%26%23"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json; charset=utf-8"
+        },
+        "body": {
+          "firstName": "First Name",
+          "lastName": "Last Name",
+          "email": "test@mail.com",
+          "verified": true
+        },
+        "matchingRules": {
+          "$.headers.Content-Type": {
+            "match": "type"
+          },
+          "$.body": {
+            "match": "type"
+          }
+        }
+      }
+    },
+    {
+      "description": "a request for signup a user with test@mail.com",
+      "providerState": "has not user with test@mail.com",
+      "request": {
+        "method": "POST",
+        "path": "/api/auth/signup",
+        "headers": {
+          "Content-Type": "application/json; charset=utf-8"
+        },
+        "body": {
+          "email": "test@mail.com",
+          "password": "password",
+          "firstName": "First Name",
+          "lastName": "Last Name"
+        },
+        "matchingRules": {
+          "$.headers.Content-Type": {
+            "match": "type"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json; charset=utf-8"
+        },
+        "body": {
+          "firstName": "First Name",
+          "lastName": "Last Name",
+          "email": "test@mail.com"
+        },
+        "matchingRules": {
+          "$.headers.Content-Type": {
+            "match": "type"
+          },
+          "$.body": {
+            "match": "type"
+          }
+        }
+      }
+    },
+    {
+      "description": "a request for logout a user",
+      "providerState": "there is a logged in user",
+      "request": {
+        "method": "DELETE",
+        "path": "/api/auth/logout"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+        }
+      }
+    },
+    {
+      "description": "a request to get changes",
+      "providerState": "has changes relative to the client",
+      "request": {
+        "method": "GET",
+        "path": "/api/sync/changes",
+        "query": "clientId=63204391a3781200348d45a9"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+        },
+        "body": {
+          "changes": [
+            {
+              "type": "CHANGE_TYPE_TASK_CREATED",
+              "object": {
+                "id": "SERVER_TASK_ID_1",
+                "modifiedAt": "2021-01-04T21:00:00.000Z"
+              }
+            }
+          ]
+        },
+        "matchingRules": {
+          "$.body.changes": {
+            "min": 1
+          },
+          "$.body.changes[*].*": {
+            "match": "type"
+          },
+          "$.body.changes[*].type": {
+            "match": "regex",
+            "regex": "CHANGE_TYPE_TASK_CREATED|CHANGE_TYPE_TASK_MODIFIED"
+          },
+          "$.body.changes[*].object": {
+            "match": "type"
+          }
+        }
+      }
+    },
+    {
+      "description": "a request to modify existing task",
+      "providerState": "has one task with id=4a69d555-756e-4805-8dbf-007c8dffb645",
+      "request": {
+        "method": "PATCH",
+        "path": "/api/sync/task",
+        "headers": {
+          "Content-Type": "application/json; charset=UTF-8"
+        },
+        "body": {
+          "changeableObjectDto": {
+            "id": "4a69d555-756e-4805-8dbf-007c8dffb645",
+            "userId": "6152e88f3560e501082c1727",
+            "type": "TASK_TYPE_BASIC",
+            "title": "Task Title",
+            "status": "TODO",
+            "createdAt": "2021-01-31T21:00:00.000Z",
+            "modifiedAt": "2021-01-31T21:00:00.000Z"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json; charset=utf-8"
+        },
+        "matchingRules": {
+          "$.headers.Content-Type": {
+            "match": "type"
+          }
+        }
+      }
+    },
+    {
+      "description": "a request to post new task",
+      "providerState": "has no tasks",
+      "request": {
+        "method": "POST",
+        "path": "/api/sync/task",
+        "headers": {
+          "Content-Type": "application/json; charset=UTF-8"
+        },
+        "body": {
+          "changeableObjectDto": {
+            "id": "4a69d555-756e-4805-8dbf-007c8dffb645",
+            "userId": "6152e88f3560e501082c1727",
+            "type": "TASK_TYPE_BASIC",
+            "title": "Task Title",
+            "status": "TODO",
+            "createdAt": "2021-01-31T21:00:00.000Z",
+            "modifiedAt": "2021-01-31T21:00:00.000Z"
+          }
+        }
+      },
+      "response": {
+        "status": 201,
+        "headers": {
+          "Content-Type": "application/json; charset=utf-8"
+        },
+        "matchingRules": {
+          "$.headers.Content-Type": {
+            "match": "type"
+          }
+        }
+      }
+    },
+    {
+      "description": "a request to delete existing task ",
+      "providerState": "has task with id=4a69d555-756e-4805-8dbf-007c8dffb645",
+      "request": {
+        "method": "DELETE",
+        "path": "/api/sync/task/4a69d555-756e-4805-8dbf-007c8dffb645"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json; charset=utf-8"
+        },
+        "matchingRules": {
+          "$.headers.Content-Type": {
+            "match": "type"
+          }
+        }
+      }
+    },
+    {
+      "description": "a request for release clientId",
+      "providerState": "has authorized user without clientIds",
+      "request": {
+        "method": "GET",
+        "path": "/api/sync/release-client-id"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json; charset=utf-8"
+        },
+        "body": {
+          "clientId": "CLIENT_ID"
+        },
+        "matchingRules": {
+          "$.body.clientId": {
+            "match": "type"
+          }
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "pactSpecification": {
+      "version": "2.0.0"
+    }
+  }
+}
